@@ -22,7 +22,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
       env:
-        # For coveralls
+        # For coveralls, needs to be setup in Settings->Secrets to work
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Install dependencies
       run: |
@@ -50,9 +50,9 @@ jobs:
       run: |
         python scripts/alphabetic.py
         python scripts/find_missing_kwargs.py
-    # This maybe should go in a separate job
-    - name: Run coveralls
-      run: |
-        coveralls
+# This needs to have secrets setup to work
+#    - name: Run coveralls
+#      run: |
+#        coveralls
       
 # TODO notifications, deploy
