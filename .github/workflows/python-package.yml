@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install coveralls 
         pip install -r tests_requirements.txt
-        npm install markdownlint-cli
+        sudo gem install mdl
     - name: Test with coverage
       run: |
         coverage run -m unittest discover
@@ -39,9 +39,16 @@ jobs:
     - name: Test with flake8
       run: |
         flake8 canvasapi tests
+    - name: Test with mdl
+      run: |
+        mdl . .github
     - name: Custom checks
       run: |
         python scripts/alphabetic.py
         python scripts/find_missing_kwargs.py
+    # This maybe should go in a separate job
+    - name: Run coveralls
+      run: |
+        coveralls
       
-# TODO mdl, notifiations, deploy
+# TODO notifications, deploy
