@@ -26,21 +26,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install coveralls 
         pip install -r tests_requirements.txt
-    - name: Lint with flake8
+    - name: Test with coverage
       run: |
-        flake8 canvasapi tests
-    - name: Test with pytest
-      run: |
-        pytest
-    - name: Lint with black with pytest
+        coverage run -m unittest discover
+    - name: Lint with black
       run: |
         black --check canvasapi tests
     - name: Lint with isort
       run: |
         isort --check canvasapi tests
+    - name: Test with flake8
+      run: |
+        flake8 canvasapi tests
     - name: Custom checks
       run: |
         python scripts/alphabetic.py
         python scritps/find_missing_kwargs.py
       
-# TODO mdl
+# TODO mdl, notifiations, deploy
