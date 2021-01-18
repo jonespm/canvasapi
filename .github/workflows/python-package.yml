@@ -41,7 +41,7 @@ jobs:
         flake8 canvasapi tests
     - name: Test with markdownlint-cli (previously mdl)
       run: |
-        markdownlint-cli . .github
+        markdownlint . .github
     - name: Custom checks
       run: |
         python scripts/alphabetic.py
