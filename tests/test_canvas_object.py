@@ -102,14 +102,19 @@ class TestCanvasObject(unittest.TestCase):
         self.assertTrue(hasattr(self.canvas_object, "filename"))
         self.assertEqual(self.canvas_object.filename, "example.json")
 
-    def test__getattribute__content_type_warns(self, m):
-        attributes = {"content-type": "application/json"}
+    def test_set_attributes_with_only_dashes(self, m):
+        # Reversed the order of the attributes to test overwrite behavior
+        attributes = {
+            "content-type": "application/json",
+            "filename": "example.json",
+        }
+
         self.canvas_object.set_attributes(attributes)
 
-        warnings.simplefilter("always", DeprecationWarning)
-
-        with warnings.catch_warnings(record=True) as warning_list:
-            self.canvas_object.__getattribute__("content-type")
-
-        self.assertEqual(len(warning_list), 1)
-        self.assertEqual(warning_list[0].category, DeprecationWarning)
+        self.assertTrue(hasattr(self.canvas_object, "content-type"))
+        self.assertEqual(
+            getattr(self.canvas_object, "content-type"), "application/json"
+        )
+        self.assertEqual(self.canvas_object.content_type, "application/json")
+        self.assertTrue(hasattr(self.canvas_object, "filename"))
+        self.assertEqual(self.canvas_object.filename, "example.json")

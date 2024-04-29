@@ -12,16 +12,22 @@ class CanvasObject(object):
     to dynamically construct this object's attributes with a JSON object.
     """
 
+    # Run if attribute with dashes is not found in the object, try to replace with underscore
+    def __getattr__(self, name):
+        if name in self._attributes:
+            return self._attributes[name]
+        else:
+            # Try a dashboard replacement
+            name_with_dashes = name.replace('_', '-')
+            if name_with_dashes in self._attributes:
+                try:
+                    return self._attributes[name_with_dashes]
+                except KeyError:
+                    raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, name))
+
+        raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, name))
+
     def __getattribute__(self, name):
-        if name == "content-type":
-            warnings.warn(
-                (
-                    "The 'content-type' attribute will be removed "
-                    "in a future version. Please use "
-                    "'content_type' instead."
-                ),
-                DeprecationWarning,
-            )
         return super(CanvasObject, self).__getattribute__(name)
 
     def __init__(self, requester, attributes):
@@ -31,6 +37,7 @@ class CanvasObject(object):
         :param attributes: The JSON object to build this object with.
         :type attributes: dict
         """
+        self._attributes = {}
         self._requester = requester
         self.set_attributes(attributes)
 
@@ -70,9 +77,11 @@ class CanvasObject(object):
         :type attributes: dict
         """
         for attribute, value in attributes.items():
-            self.__setattr__(attribute, value)
-            if attribute == "content-type":
-                self.__setattr__("content_type", value)
+            # Special case
+            if attribute == "validation_token":
+                self.__setattr__(attribute, value)
+            else:
+                self._attributes[attribute] = value
 
             try:
                 naive = arrow.get(str(value)).datetime
